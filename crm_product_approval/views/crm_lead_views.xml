@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Copyright 2026
+     Adds a "New Products" tab (next to Contacts) on the Pipeline form when
+     the opportunity's current stage has "Create Product" enabled. -->
+<odoo>
+
+    <record id="view_crm_lead_form_new_products" model="ir.ui.view">
+        <field name="name">crm.lead.form.new.products</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Load the related boolean used to show/hide the tab below. -->
+            <field name="is_rotting" position="after">
+                <field name="stage_create_product" invisible="1"/>
+            </field>
+
+            <page name="lead" position="after">
+                <page name="new_products"
+                      string="New Products"
+                      invisible="not stage_create_product">
+                    <field name="product_ids"
+                           context="{'default_crm_lead_id': id, 'default_type': 'consu'}">
+                        <list editable="bottom">
+                            <field name="name"/>
+                            <field name="default_code"/>
+                            <field name="list_price" string="Sales Price"/>
+                            <field name="standard_price" string="Cost"/>
+                            <field name="approval_state"
+                                   widget="badge"
+                                   decoration-info="approval_state == 'draft'"
+                                   decoration-warning="approval_state == 'pending_approval'"
+                                   decoration-success="approval_state == 'approved'"
+                                   decoration-danger="approval_state == 'rejected'"
+                                   decoration-muted="approval_state == 'returned'"/>
+                        </list>
+                    </field>
+                </page>
+            </page>
+
+        </field>
+    </record>
+
+</odoo>

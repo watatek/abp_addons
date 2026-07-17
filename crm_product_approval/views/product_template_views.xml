@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Copyright 2026
+     Adds Submit for Approval / Approval Status to the Product form,
+     mirroring views/sale_order_views.xml from dynamic_approval_workflow.
+     product.product_template_only_form_view is the primary form users see
+     under Sales > Products / Inventory > Products in Odoo 19. -->
+<odoo>
+
+    <record id="view_product_template_form_approval" model="ir.ui.view">
+        <field name="name">product.template.form.approval</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+
+            <!-- The product form has no <header> by default: create one. -->
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_submit_for_approval"
+                            type="object"
+                            string="Submit for Approval"
+                            class="btn-primary"
+                            invisible="approval_state not in ('draft', 'returned')"/>
+                    <button name="action_reset_to_draft"
+                            type="object"
+                            string="Reset to Draft"
+                            class="btn-secondary"
+                            invisible="approval_state not in ('rejected', 'returned')"/>
+                </header>
+            </xpath>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_approval_requests"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-check-square-o"
+                        invisible="approval_request_count == 0">
+                    <field name="approval_request_count"
+                           string="Approvals"
+                           widget="statinfo"/>
+                </button>
+            </xpath>
+
+            <xpath expr="//group[@name='group_standard_price']" position="inside">
+                <field name="approval_state"
+                       readonly="1"
+                       widget="badge"
+                       decoration-info="approval_state == 'draft'"
+                       decoration-warning="approval_state == 'pending_approval'"
+                       decoration-success="approval_state == 'approved'"
+                       decoration-danger="approval_state == 'rejected'"
+                       decoration-muted="approval_state == 'returned'"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_product_template_tree_approval" model="ir.ui.view">
+        <field name="name">product.template.list.approval</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="before">
+                <field name="approval_state"
+                       widget="badge"
+                       optional="show"
+                       decoration-info="approval_state == 'draft'"
+                       decoration-warning="approval_state == 'pending_approval'"
+                       decoration-success="approval_state == 'approved'"
+                       decoration-danger="approval_state == 'rejected'"
+                       decoration-muted="approval_state == 'returned'"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

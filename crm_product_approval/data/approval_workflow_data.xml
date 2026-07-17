@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Copyright 2026
+     Seeds one active approval.workflow.config for product.template,
+     mirroring the Sales Order sample shipped in dynamic_approval_workflow. -->
+<odoo noupdate="1">
+
+    <record id="approval_workflow_config_product_default" model="approval.workflow.config">
+        <field name="name">Product Price Approval</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="sequence">6</field>
+        <field name="domain">[]</field>
+        <field name="escalation_days">2</field>
+        <field name="active" eval="True"/>
+        <field name="note" type="html">
+            <p>Default workflow applied to new Products (selling price / cost price review).</p>
+            <p>
+                Out of the box the approver is the generic "Approval Manager"
+                group from Dynamic Approval Workflow, so the flow works
+                immediately after install. If the Accounting/Invoicing app is
+                installed, open the stage below and change its "Approver
+                Group" to your real Accounting group (e.g. Billing
+                Administrator) so Accounting — not Sales — approves the
+                price.
+            </p>
+        </field>
+    </record>
+
+    <record id="approval_workflow_stage_product_default_1" model="approval.workflow.stage">
+        <field name="config_id" ref="approval_workflow_config_product_default"/>
+        <field name="sequence">10</field>
+        <field name="name">Accounting Price Approval</field>
+        <field name="approver_type">group</field>
+        <field name="group_id" ref="dynamic_approval_workflow.group_approval_manager"/>
+        <field name="require_all_group_members" eval="False"/>
+        <field name="escalation_user_id" ref="base.user_admin"/>
+    </record>
+
+</odoo>

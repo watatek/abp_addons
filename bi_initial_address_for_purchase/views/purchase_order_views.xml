@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="purchase_order_set_form" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[1]" position="after">
+                    <page string="Address (Initial)" name="purchase_address_change"
+                          invisible="not partner_id">
+                        <group>
+                            <group name="other_info">
+                                <span class="o_form_label o_td_label" name="address_name">
+                                    <b>Address</b>
+                                </span>
+                                <div class="o_address_format">
+                                    <field name="set_name" readonly="1" placeholder="Vendor Name..."
+                                           class="o_address_street"
+                                    />
+                                    <field name="street" readonly="1"
+                                           invisible="not street"
+                                           placeholder="Street..." class="o_address_street"
+                                    />
+                                    <field name="street2" readonly="1"
+                                           invisible="not street2"
+                                           placeholder="Street 2..." class="o_address_street"
+                                    />
+                                    <field name="city" readonly="1"
+                                           invisible="not city"
+                                           placeholder="City" class="o_address_city"
+                                    />
+                                    <field name="state_id" readonly="1" class="o_address_state" placeholder="State"
+                                           options="{'no_open': True, 'no_quick_create': True}"
+                                           context="{'country_id': country_id, 'default_country_id': country_id, 'zip': zip}"/>
+                                    <field name="zip" readonly="1" placeholder="ZIP" class="o_address_zip"
+                                    />
+                                    <field name="country_id" readonly="1" placeholder="Country"
+                                           class="o_address_country"
+                                           options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"
+                                    />
+                                </div>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.actions.server" id="action_product_intial_address">
+            <field name="name">Initial Address Update</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.action_update_initial()
+            </field>
+        </record>
+    </data>
+</odoo>

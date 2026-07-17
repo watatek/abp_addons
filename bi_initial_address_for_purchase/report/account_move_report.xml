@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="invoice_report_inherit" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[hasclass('invoice_main')]" position="before">
+            <t t-if="o.set_name">
+                <div>
+                    <span>
+                        <b>Initial Address</b>
+                    </span>
+                    <br/>
+                    <span t-field="o.set_name" class="m-0"/>
+                    <br/>
+                    <span t-field="o.street" class="m-0"/>
+                    <br/>
+                    <t t-if="o.street2">
+                        <span t-field="o.street2" class="m-0"/>
+                        <br/>
+                    </t>
+                    <span t-field="o.city" class="m-0"/>
+                    <span t-field="o.zip" class="m-0"/>
+                    <br/>
+                    <span t-field="o.country_id" class="m-0"/>
+                    <br/>
+                    <span></span>
+                    <br/>
+                </div>
+            </t>
+        </xpath>
+
+    </template>
+</odoo>

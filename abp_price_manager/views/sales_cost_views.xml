@@ -28,6 +28,9 @@
                 <button name="action_decline" type="object" string="Decline"
                         icon="fa-times" class="text-danger" width="90px"
                         invisible="state != 'submitted'"/>
+                <button name="action_deactivate" type="object" string="Deactivate"
+                        icon="fa-ban" class="text-danger" width="90px"
+                        invisible="state != 'active'"/>
             </list>
         </field>
     </record>

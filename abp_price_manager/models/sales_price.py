@@ -1,6 +1,7 @@
 # Copyright 2026
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools.misc import formatLang
 
 
 class SalesPrice(models.Model):
@@ -33,7 +34,30 @@ class SalesPrice(models.Model):
         store=True,
         readonly=False,
         tracking=True,
-        help="Inherited from the selected Cost Name; can be overridden.",
+        help="Inherited from the selected Cost Name; can be overridden. "
+             "Expressed in the cost currency.",
+    )
+    cost_currency_id = fields.Many2one(
+        comodel_name="res.currency",
+        string="Cost Currency",
+        related="cost_id.currency_id",
+        store=True,
+        readonly=True,
+    )
+    landed_cost_converted = fields.Float(
+        string="Landed Cost (Price Currency)",
+        compute="_compute_landed_cost_converted",
+        store=True,
+        readonly=True,
+        tracking=True,
+        help="Landed Cost converted from the cost currency into the price "
+             "currency at the current rate.",
+    )
+    landed_cost_display = fields.Char(
+        string="Landed Cost",
+        compute="_compute_landed_cost_display",
+        help="Landed Cost in the cost currency and, when they differ, its "
+             "equivalent in the price currency.",
     )
 
     exw_price = fields.Float(string="EXW Price", tracking=True)
@@ -47,6 +71,20 @@ class SalesPrice(models.Model):
         tracking=True,
         help="EXW Price + Processing Price + Freight Price.",
     )
+    selling_price_company = fields.Float(
+        string="Selling Price (Company Currency)",
+        compute="_compute_selling_price_company",
+        store=True,
+        readonly=True,
+        help="Selling Price converted into the company currency at the "
+             "current rate.",
+    )
+    selling_price_display = fields.Char(
+        string="Selling Price",
+        compute="_compute_selling_price_display",
+        help="Selling Price in the price currency and, when they differ, its "
+             "equivalent in the company currency.",
+    )
     gross_margin = fields.Float(
         string="Gross Margin",
         compute="_compute_gross_margin",
@@ -57,6 +95,25 @@ class SalesPrice(models.Model):
             "(Selling Price - Landed Cost) / Landed Cost, stored as a ratio "
             "and displayed with the percentage widget."
         ),
+    )
+
+    company_id = fields.Many2one(
+        comodel_name="res.company",
+        string="Company",
+        default=lambda self: self.env.company,
+        required=True,
+    )
+    currency_id = fields.Many2one(
+        comodel_name="res.currency",
+        string="Currency",
+        default=lambda self: self.env.company.currency_id,
+    )
+    exchange_rate = fields.Float(
+        string="Exchange Rate",
+        compute="_compute_exchange_rate",
+        readonly=True,
+        digits=(12, 6),
+        help="Current res.currency.rate of the selected currency.",
     )
 
     approved_by_id = fields.Many2one(
@@ -106,13 +163,86 @@ class SalesPrice(models.Model):
                 record.exw_price + record.processing_price + record.freight_price
             )
 
-    @api.depends("selling_price", "landed_cost")
+    @api.depends("currency_id", "currency_id.rate")
+    def _compute_exchange_rate(self):
+        for record in self:
+            record.exchange_rate = record.currency_id.rate or 0.0
+
+    @api.depends("landed_cost", "cost_currency_id", "currency_id",
+                 "cost_currency_id.rate", "currency_id.rate")
+    def _compute_landed_cost_converted(self):
+        for record in self:
+            source = record.cost_currency_id or record.currency_id
+            target = record.currency_id
+            if not record.landed_cost or not source or not target \
+                    or source == target:
+                record.landed_cost_converted = record.landed_cost
+                continue
+            record.landed_cost_converted = source._convert(
+                record.landed_cost,
+                target,
+                record.company_id or self.env.company,
+                fields.Date.context_today(record),
+            )
+
+    @api.depends("landed_cost", "landed_cost_converted",
+                 "cost_currency_id", "currency_id")
+    def _compute_landed_cost_display(self):
+        for record in self:
+            source = record.cost_currency_id or record.currency_id
+            target = record.currency_id
+            base = formatLang(
+                self.env, record.landed_cost, currency_obj=source
+            ) if source else formatLang(self.env, record.landed_cost)
+            if source and target and source != target:
+                converted = formatLang(
+                    self.env, record.landed_cost_converted, currency_obj=target
+                )
+                record.landed_cost_display = "%s = %s" % (base, converted)
+            else:
+                record.landed_cost_display = base
+
+    @api.depends("selling_price", "currency_id", "currency_id.rate",
+                 "company_id")
+    def _compute_selling_price_company(self):
+        for record in self:
+            company = record.company_id or self.env.company
+            target = company.currency_id
+            source = record.currency_id
+            if not record.selling_price or not source or source == target:
+                record.selling_price_company = record.selling_price
+                continue
+            record.selling_price_company = source._convert(
+                record.selling_price,
+                target,
+                company,
+                fields.Date.context_today(record),
+            )
+
+    @api.depends("selling_price", "selling_price_company", "currency_id",
+                 "company_id")
+    def _compute_selling_price_display(self):
+        for record in self:
+            company = record.company_id or self.env.company
+            source = record.currency_id
+            target = company.currency_id
+            base = formatLang(
+                self.env, record.selling_price, currency_obj=source
+            ) if source else formatLang(self.env, record.selling_price)
+            if source and target and source != target:
+                converted = formatLang(
+                    self.env, record.selling_price_company, currency_obj=target
+                )
+                record.selling_price_display = "%s = %s" % (base, converted)
+            else:
+                record.selling_price_display = base
+
+    @api.depends("selling_price", "landed_cost_converted")
     def _compute_gross_margin(self):
         for record in self:
-            if record.landed_cost:
-                record.gross_margin = (
-                    record.selling_price - record.landed_cost
-                ) / record.landed_cost
+            cost = record.landed_cost_converted
+            if cost:
+                record.gross_margin = (record.selling_price - cost) / cost
             else:
                 record.gross_margin = 0.0
 

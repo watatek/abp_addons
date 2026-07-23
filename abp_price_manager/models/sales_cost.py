@@ -165,12 +165,13 @@ class SalesCost(models.Model):
     def action_approve(self):
         self._check_state("submitted", _("Approve"))
         for record in self:
-            # Only one cost may stay Active for a given item: deactivate the
-            # previous one(s) before promoting this record.
+            # Only one cost may stay Active per item and supplier pair:
+            # deactivate the previous one(s) before promoting this record.
             previous = self.search(
                 [
                     ("id", "!=", record.id),
                     ("product_template_id", "=", record.product_template_id.id),
+                    ("partner_id", "=", record.partner_id.id),
                     ("state", "=", "active"),
                 ]
             )

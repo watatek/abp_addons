@@ -48,6 +48,13 @@ htmlcov/
 .cache
 .pytest_cache/
 
+# Playwright / node
+node_modules/
+tests/test-results/
+tests/playwright-report/
+tests/blob-report/
+tests/.cache/
+
 # Editors / IDE
 .vscode/
 .idea/

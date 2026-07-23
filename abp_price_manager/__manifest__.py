@@ -8,7 +8,7 @@
     "website": "",
     "category": "ABP",
     "license": "LGPL-3",
-    "depends": ["product", "mail"],
+    "depends": ["product", "mail", "purchase"],
     "data": [
         "security/ir.model.access.csv",
         "views/product_template_views.xml",

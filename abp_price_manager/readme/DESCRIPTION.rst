@@ -9,16 +9,47 @@ It introduces two models:
   three. The record also carries a currency and the matching
   ``res.currency`` rate.
 * ``sales.price`` (*Price Management*) — EXW price, processing price and
-  freight price for a given item. The **selling price** is the sum of the
-  three, the landed cost is inherited from the linked cost record, and the
-  **gross margin** is derived from both.
+  freight price for a given item, in its own currency. The **selling price**
+  is the sum of the three, the landed cost is inherited from the linked cost
+  record, and the **gross margin** is derived from both.
 
 Both models share the same status flow — *Draft*, *Submitted*, *Active*,
 *Inactive* — and record who approved the line and when.
 
-Only one cost and one price may be *Active* for a given item at a time.
-Approving a new one automatically deactivates the previous one, and the
-approved values are written to the product:
+Multi-currency
+~~~~~~~~~~~~~~
+
+A cost and the price built on it may be quoted in different currencies. The
+landed cost is therefore converted into the price currency before the gross
+margin is computed, so the margin stays meaningful:
+
+``Gross Margin = (Selling Price - Landed Cost in price currency) / Landed
+Cost in price currency``
+
+The landed cost and the selling price are shown as a single
+``amount = converted amount`` line — the second half only appears when the
+two currencies differ.
+
+Purchase integration
+~~~~~~~~~~~~~~~~~~~~
+
+On a purchase order line the approved cost takes precedence over the vendor
+pricelist:
+
+* with a vendor already set, the active cost of that vendor for the item is
+  used;
+* with no vendor yet, the cheapest active cost across vendors is used and the
+  order adopts that supplier.
+
+The amount is converted into the order currency, and a price typed by hand is
+never overwritten.
+
+Approving
+~~~~~~~~~
+
+One price may be *Active* per item, and one cost per item **and supplier**
+pair. Approving a new one automatically deactivates the previous matching one,
+and the approved values are written to the product:
 
 * landed cost → ``product.template.standard_price``
 * selling price → ``product.template.list_price``

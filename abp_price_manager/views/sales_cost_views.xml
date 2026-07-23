@@ -73,10 +73,15 @@
                             <field name="exchange_rate"/>
                         </group>
                         <group string="Cost Components">
-                            <field name="exw_cost" readonly="state != 'draft'"/>
-                            <field name="processing_cost" readonly="state != 'draft'"/>
-                            <field name="freight_cost" readonly="state != 'draft'"/>
-                            <field name="landed_cost" class="fw-bold"/>
+                            <field name="exw_cost" readonly="state != 'draft'"
+                                   widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="processing_cost" readonly="state != 'draft'"
+                                   widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="freight_cost" readonly="state != 'draft'"
+                                   widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="landed_cost" invisible="1"/>
+                            <field name="landed_cost_display" readonly="1"
+                                   class="fw-bold"/>
                         </group>
                         <group string="Approval">
                             <field name="approved_by_id" widget="many2one_avatar_user"/>

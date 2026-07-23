@@ -6,24 +6,26 @@
         <field name="model">sales.price</field>
         <field name="arch" type="xml">
             <list string="Price Management" decoration-muted="state == 'inactive'" decoration-success="state == 'active'">
-                <field name="name"/>
-                <field name="product_template_id"/>
-                <field name="selling_price"/>
-                <field name="gross_margin" widget="percentage"
+                <field name="name" width="140px"/>
+                <field name="product_template_id" width="180px"/>
+                <field name="selling_price" width="110px"/>
+                <field name="gross_margin" widget="percentage" width="100px"
                        decoration-danger="gross_margin &lt; 0"/>
-                <field name="create_uid" string="Created by" widget="many2one_avatar_user"/>
-                <field name="approved_by_id" widget="many2one_avatar_user"/>
-                <field name="approval_date"/>
-                <field name="state" widget="badge"
+                <field name="create_uid" string="Created by" width="60px"
+                       widget="many2one_avatar_user"/>
+                <field name="approved_by_id" width="60px"
+                       widget="many2one_avatar_user"/>
+                <field name="approval_date" width="130px"/>
+                <field name="state" widget="badge" width="90px"
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'submitted'"
                        decoration-success="state == 'active'"
                        decoration-danger="state == 'inactive'"/>
                 <button name="action_approve" type="object" string="Approve"
-                        icon="fa-check" class="text-success"
+                        icon="fa-check" class="text-success" width="90px"
                         invisible="state != 'submitted'"/>
                 <button name="action_decline" type="object" string="Decline"
-                        icon="fa-times" class="text-danger"
+                        icon="fa-times" class="text-danger" width="90px"
                         invisible="state != 'submitted'"/>
             </list>
         </field>

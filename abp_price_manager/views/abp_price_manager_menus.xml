@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_price_manager_root"
+              name="Price Manager"
+              web_icon="abp_price_manager,static/description/icon.png"
+              sequence="85"/>
+
+    <menuitem id="menu_cost_management"
+              name="Cost Management"
+              parent="menu_price_manager_root"
+              action="action_cost_management"
+              sequence="10"/>
+
+    <menuitem id="menu_price_management"
+              name="Price Management"
+              parent="menu_price_manager_root"
+              action="action_price_management"
+              sequence="20"/>
+
+</odoo>

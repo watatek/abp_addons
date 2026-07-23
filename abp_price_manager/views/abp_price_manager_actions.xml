@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_cost_management" model="ir.actions.act_window">
+        <field name="name">Cost Management</field>
+        <field name="res_model">sales.cost</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a cost record
+            </p>
+            <p>
+                Track EXW, processing and freight cost per item and supplier.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_price_management" model="ir.actions.act_window">
+        <field name="name">Price Management</field>
+        <field name="res_model">sales.price</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a price record
+            </p>
+            <p>
+                Build selling prices on top of an approved cost record.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="sales_cost_view_list" model="ir.ui.view">
+        <field name="name">sales.cost.list</field>
+        <field name="model">sales.cost</field>
+        <field name="arch" type="xml">
+            <list string="Cost Management" decoration-muted="state == 'inactive'" decoration-success="state == 'active'">
+                <field name="name"/>
+                <field name="product_template_id"/>
+                <field name="partner_id"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="landed_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="create_uid" string="Created by" widget="many2one_avatar_user"/>
+                <field name="approved_by_id" widget="many2one_avatar_user"/>
+                <field name="approval_date"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'submitted'"
+                       decoration-success="state == 'active'"
+                       decoration-danger="state == 'inactive'"/>
+                <button name="action_approve" type="object" string="Approve"
+                        icon="fa-check" class="text-success"
+                        invisible="state != 'submitted'"/>
+                <button name="action_decline" type="object" string="Decline"
+                        icon="fa-times" class="text-danger"
+                        invisible="state != 'submitted'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="sales_cost_view_form" model="ir.ui.view">
+        <field name="name">sales.cost.form</field>
+        <field name="model">sales.cost</field>
+        <field name="arch" type="xml">
+            <form string="Cost">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-primary" invisible="state != 'submitted'"/>
+                    <button name="action_decline" type="object" string="Decline"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_deactivate" type="object" string="Deactivate"
+                            invisible="state != 'active'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,active,inactive"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Cost Name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. FOB 2026 Q1 - Supplier A"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Item">
+                            <field name="product_template_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="partner_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="create_uid" string="Created by"
+                                   widget="many2one_avatar_user" readonly="1"/>
+                        </group>
+                        <group string="Currency">
+                            <field name="currency_id" readonly="state != 'draft'"/>
+                            <field name="exchange_rate"/>
+                        </group>
+                        <group string="Cost Components">
+                            <field name="exw_cost" readonly="state != 'draft'"/>
+                            <field name="processing_cost" readonly="state != 'draft'"/>
+                            <field name="freight_cost" readonly="state != 'draft'"/>
+                            <field name="landed_cost" class="fw-bold"/>
+                        </group>
+                        <group string="Approval">
+                            <field name="approved_by_id" widget="many2one_avatar_user"/>
+                            <field name="approval_date"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="sales_cost_view_search" model="ir.ui.view">
+        <field name="name">sales.cost.search</field>
+        <field name="model">sales.cost</field>
+        <field name="arch" type="xml">
+            <search string="Cost">
+                <field name="name"/>
+                <field name="product_template_id"/>
+                <field name="partner_id"/>
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_submitted" string="Submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter name="filter_active" string="Active" domain="[('state', '=', 'active')]"/>
+                <filter name="filter_inactive" string="Inactive" domain="[('state', '=', 'inactive')]"/>
+                <group>
+                    <filter name="group_product" string="Item" domain="[]"
+                            context="{'group_by': 'product_template_id'}"/>
+                    <filter name="group_partner" string="Supplier" domain="[]"
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_state" string="Status" domain="[]"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+</odoo>

@@ -1,4 +1,63 @@
+# Byte-compiled / cache
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+
+# Odoo
 *-19.0.0.0/
 *-19.0.1.0.1/
+*.conf
+*.cfg
+odoo.conf
+odoo-server.conf
+.openerp_serverrc
+filestore/
+sessions/
+data_dir/
+*.pot~
+*.po~
+
+# Logs / DB dumps
+*.log
+*.sql
+*.dump
+*.zip
+*.gz
+
+# Packaging / envs
+.Python
+build/
+dist/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+env/
+venv/
+.venv/
+ENV/
+pip-log.txt
+
+# Test / coverage
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.cache
+.pytest_cache/
+
+# Editors / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db

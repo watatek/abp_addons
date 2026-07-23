@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sales_cost_user,sales.cost user,model_sales_cost,base.group_user,1,1,1,0
+access_sales_cost_manager,sales.cost manager,model_sales_cost,base.group_system,1,1,1,1
+access_sales_price_user,sales.price user,model_sales_price,base.group_user,1,1,1,0
+access_sales_price_manager,sales.price manager,model_sales_price,base.group_system,1,1,1,1
